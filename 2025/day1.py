@@ -25,21 +25,24 @@ def read_txt_file_df(filepath):
     return df
 
 def format_df(df:pd.DataFrame)->pd.DataFrame:
-    df['Direction'] = df[0].str.apply(lambda x: x[0])
-    df['Distance'] = df[0].str.apply(lambda x: int(x[1:])).astype(int)
+    df['Direction'] = df[0].apply(lambda x: str(x)[0])
+    df['Distance'] = df[0].apply(lambda x: int(str(x)[1:])).astype(int)
 
     df.loc[0, 'Last_Position'] = dial_start
+
+    #  Assuming dial min is 0:
     for i in range(len(df)):
         if i == 0:
             continue
-        if df.loc[i, 'Direction'] == 'R':
-            df.loc[i, 'Last_Position'] = (df.loc[i, 'Last_Position'] + df.loc[i, 'Distance']) % (dial_max + 1)
-        elif df.loc[i, 'Direction'] == 'L':
-            df.loc[i, 'Last_Position'] = (df.loc[i, 'Last_Position'] - df.loc[i, 'Distance']) % (dial_max + 1)
+        df.loc[i, 'Last_Position'] = df.loc[i-1, 'New_Position']
+        if df.loc[i, 'Direction'] == 'L':
+            df.loc[i, 'New_Position'] = (df.loc[i-1, 'Last_Position'] + df.loc[i, 'Distance']) % (dial_max + 1)
+        elif df.loc[i, 'Direction'] == 'R':
+            df.loc[i, 'New_Position'] = (df.loc[i-1, 'Last_Position'] - df.loc[i, 'Distance']) % (dial_max + 1)
     return df
 
 def calculate_zeros(df:pd.DataFrame)->int:
-    return zero_count = (df['Last_Position'] == 0).sum()
+    return (df['Last_Position'] == 0).sum()
 
 #%% Main
 
@@ -47,7 +50,8 @@ def main():
     df=read_txt_file_df(filepath)
     df = format_df(df)
     zero_count = calculate_zeros(df)
-    print(f"Number of times the dial lands on zero: {zero_count}")
+    # print(df['Direction'].unique())
+    print(zero_count)
 
 if __name__=="__main__":
     main()
