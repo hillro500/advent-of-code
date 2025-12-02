@@ -46,9 +46,40 @@ def find_invalid_IDs(df:pd.DataFrame)->[int]:
 
 #%% Part 2
 
+def check_strings(strings:[str])->bool:
+    if len(strings) == 1:
+        return False
+    first_num = strings[0]
+    for i in strings:
+        if i != first_num:
+            return False
+    return True
+        
+def split_string(string:str, num_splits:int)->[str]:
+    size = len(string)
+    if size % num_splits > 0:
+        return
+    else:
+        strings=[]
+        last_num = 0
+        splits = list(range(0, num_splits+1))
+        for i in splits:
+            split = string[last_num:i]
+            if split:
+                strings.append(split)
+            last_num = i
+    return strings
+
 def find_invalid_IDs_2(df:pd.DataFrame)->[int]:
     invalid_IDs = []
-    
+    for idx, row in df.iterrows():
+        for i in range(row['Start'], row['End']+1):
+            string = str(i)
+            size = len(string)
+            for num_splits in range(1,size):
+                strings = split_string(string, num_splits)
+                if strings and check_strings(strings):
+                    invalid_IDs.append(int(string))
     return invalid_IDs
 
 #%% Main
@@ -68,7 +99,6 @@ def main():
     df = format_df(df)
     # part1(df)
     part2(df)
-
 
 if __name__=="__main__":
     main()
