@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec  5 09:47:32 2024
-
-@author: hillr
-"""
-
 import glob, os, re
 import pandas as pd
 import numpy as np
@@ -12,7 +5,7 @@ import datetime as dt
 
 #%% Globals
 
-filepath=r''
+file=r''
 
 #%%
 
@@ -22,7 +15,8 @@ def read_txt_file(filepath):
         for l in f:
             pass
 
-def read_txt_file_df(filepath):
+def read_txt_file_df(filepath)->pd.DataFrame:
+    filepath = os.path.join(os.path.dirname(__file__), file)
     df=pd.read_csv(filepath, header=None, sep='|', engine='python')
     for col in df.columns:
         df[col]=df[col].sort_values(ignore_index=True)
@@ -44,19 +38,20 @@ def f2(df:pd.DataFrame)->pd.DataFrame:
 #%% Main
 
 def part1(df:pd.DataFrame)->int:
-    return f1(df)
+    answer = f1(df)
+    print('Part 1:', answer)
+    return answer
 
 def part2(df:pd.DataFrame)->int:
-    return f2(df)
+    answer = f2(df)
+    print('Part 2:', answer)
+    return answer
 
 def main():
-    df=read_txt_file_df(filepath)
+    df=read_txt_file_df(file)
     df = format_df(df)
     answer1 = part1(df)
     answer2 = part2(df)
-    print('Part 1:', answer1)
-    print('Part 2:', answer2)
-
 
 if __name__=="__main__":
     main()
